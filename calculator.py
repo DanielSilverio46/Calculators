@@ -5,52 +5,78 @@ import re
 
 result: Union[int, float] = 0
 
+def sum(adder: Union[int, float]) -> Union[int, float]:
+    global result
+    result += adder
+
+    return result
+
+def sub(subtractor: Union[int, float]) -> Union[int, float]:
+    global result
+    result -= subtractor
+
+    return result
+
+def mul(multiplier: Union[int, float]) -> Union[int, float]:
+    global result
+    result *= multiplier
+
+    return result  
+
+def div(divider: Union[int, float]) -> Union[int, float]:
+    global result
+    result /= divider
+
+    return result
+
+
+def findNumber(calculation: str) -> re.Match:
+    return re.match(r"[0-9]{1,}", calculation)
+
+def findSignal(calculation: str) -> re.Match:
+    return re.match(r"[\+\-\*\/]", calculation)
+
+
 def main() -> int:
     global result
 
     calculation: str = input("Type the Calculation: ").strip()
     calculate: bool = False
 
-    while True:
-        if calculation == '': break
+    functions = { '+': sum, '-': sub, '*': mul, '/': div }
 
-        strNumber: Optional[re.Match] = re.match(r"[0-9]{1,}", calculation)
-        strSignal: Optional[re.Match] = re.match(r"[\+\-\*\/]", calculation)
+    while calculation != '':
+        number = findNumber(calculation)
 
-        number: int = 0
-        signal: str = ''
+        if number:
+            start_num, stop_num = number.span()
+            calculation = calculation[stop_num:].strip()
 
-        if strNumber:
-            start, stop = strNumber.span()
-            strNumber = calculation[start:stop]
-            
-            number = int(strNumber)
-            calculation = calculation[stop:].strip()
+            number = float(number.string[start_num:stop_num])
 
-            if result == 0:
+        signal = findSignal(calculation)
+
+        if signal:
+            start_sig, stop_sig = signal.span()
+            calculation = calculation[stop_sig:].strip()
+
+            signal = signal.string[start_sig:stop_sig]
+
+            if type(number) == float:
                 result = number
+                number = findNumber(calculation)
 
-            elif calculate:
-                if signal == '+':
-                    result += number
-                
-                elif signal == '-':
-                    result -= number
-                
-                elif signal == '*':
-                    result *= number
-                
-                elif signal == '/':
-                    result /= number
-                
-                calculate = False
+                if number:
+                    start_num, stop_num = number.span()
+                    calculation = calculation[stop_num:].strip()
 
-        if strSignal:
-            start, stop = strSignal.span()
-            signal = calculation[start]
-            calculation = calculation[stop:].strip()
+                    number = float(number.string[start_num:stop_num])
 
-            calculate = True
+                    functions[signal](number)
+
+
+    if str(result).split('.')[1] == '0':
+        result = int(result)
 
     print("It's equal ", result)
 
