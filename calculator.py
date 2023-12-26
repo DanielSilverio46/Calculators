@@ -19,12 +19,12 @@ def main() -> int:
         elif calculation[i] == '*':
             if calculation[i+1].replace('.', '').isnumeric():
                 result *= float(calculation[i+1])
-                i = 1
+                i += 1
 
         elif calculation[i] == '/':
             if calculation[i+1].replace('.', '').isnumeric():
                 result /= float(calculation[i+1])
-                i = 1
+                i += 1
 
     print(result)
 
